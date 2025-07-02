@@ -32,12 +32,12 @@ def load_vectorstore():
     embeddings = AzureOpenAIEmbeddings(
         openai_api_key=API_KEY,
         openai_api_base=RESOURCE_ENDPOINT,
-        openai_api_version=API_VERSION,
+        openai_api_version=API_VERSION,          # must match your Azure deployment's version
         openai_api_type="azure",
+        deployment="gpt-4-turbo-128k",  # MUST match the *deployment name*, not model name
         chunk_size=1000,
         validate_base_url=False
     )
-
     # If FAISS index already exists, load it
     if os.path.exists(index_path):
         return FAISS.load_local(index_path, embeddings)
