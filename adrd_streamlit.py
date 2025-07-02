@@ -11,7 +11,6 @@ from langchain.prompts import PromptTemplate
 
 
 # Load environment variables
-load_dotenv()
 API_KEY = st.secrets["API_KEY_OPEN_AI"]
 API_VERSION = st.secrets["API_VERSION"]
 RESOURCE_ENDPOINT = st.secrets["RESOURCE_ENDPOINT"]
