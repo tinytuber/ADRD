@@ -7,4 +7,3 @@ chromadb
 openai
 tiktoken
 protobuf==3.20.3
-CHROMA_USE_STATIC = "true"
