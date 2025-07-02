@@ -35,6 +35,8 @@ def load_vectorstore():
         openai_api_version=API_VERSION,
         openai_api_type="azure",  # Required for Azure
         chunk_size=1000           # Must be ≤ 2048; pick a value based on your model context
+        validate_base_url=False,   # ✅ add this line
+
     )    
 
     if os.path.exists(persist_path) and os.listdir(persist_path):
