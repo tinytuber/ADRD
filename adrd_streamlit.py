@@ -12,13 +12,12 @@ from langchain.prompts import PromptTemplate
 
 # Load environment variables
 load_dotenv()
-API_KEY = os.environ['API_KEY_OPEN_AI']
-API_VERSION = os.environ['API_VERSION']
-RESOURCE_ENDPOINT = os.environ['RESOURCE_ENDPOINT']
+API_KEY = st.secrets["API_KEY_OPEN_AI"]
+API_VERSION = st.secrets["API_VERSION"]
+RESOURCE_ENDPOINT = st.secrets["RESOURCE_ENDPOINT"]
+ACCESS_CODE = st.secrets["APP_ACCESS_CODE"]
 
 # Load from secrets or fallback to env
-ACCESS_CODE = os.getenv("APP_ACCESS_CODE")
-
 def check_access():
     code = st.text_input("🔒 Enter access code to continue:", type="password")
     if code != ACCESS_CODE:
