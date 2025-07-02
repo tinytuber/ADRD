@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import AzureOpenAIEmbeddings
 from langchain.chat_models import AzureChatOpenAI
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import FAISS
 from langchain.schema import Document
 from langchain.chains import RetrievalQA, LLMChain
 from langchain.prompts import PromptTemplate
@@ -65,11 +65,10 @@ def load_vectorstore():
     labeled_2025 = [Document(page_content=c, metadata={"source": "2025"}) for c in chunks_2025]
     all_chunks = labeled_2022 + labeled_2025
 
-    vectorstore = Chroma.from_documents(
-        documents=all_chunks,
-        embedding=embeddings,
-        persist_directory=persist_path
-    )
+    vectorstore = FAISS.from_documents(
+    documents=all_chunks,
+    embedding=embeddings
+)
     vectorstore.persist()
     return vectorstore
 
