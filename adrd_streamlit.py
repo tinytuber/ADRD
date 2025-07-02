@@ -1,7 +1,8 @@
 import os
 import streamlit as st
+from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings.azure_openai import AzureOpenAIEmbeddings
+from langchain_community.embeddings import AzureOpenAIEmbeddings
 from langchain.chat_models import AzureChatOpenAI
 from langchain.vectorstores import Chroma
 from langchain.schema import Document
