@@ -1,5 +1,4 @@
 import os
-os.environ["CHROMA_USE_STATIC"] = "true"
 import streamlit as st
 from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -10,14 +9,13 @@ from langchain.schema import Document
 from langchain.chains import RetrievalQA, LLMChain
 from langchain.prompts import PromptTemplate
 
-
 # Load environment variables
 API_KEY = st.secrets["API_KEY_OPEN_AI"]
 API_VERSION = st.secrets["API_VERSION"]
 RESOURCE_ENDPOINT = st.secrets["RESOURCE_ENDPOINT"]
 ACCESS_CODE = st.secrets["APP_ACCESS_CODE"]
 
-# Load from secrets or fallback to env
+# Authentication step
 def check_access():
     code = st.text_input("🔒 Enter access code to continue:", type="password")
     if code != ACCESS_CODE:
@@ -28,21 +26,23 @@ check_access()
 
 @st.cache_resource
 def load_vectorstore():
-    persist_path = "chroma_index"
+    index_path = "faiss_index"
 
+    # Set up Azure OpenAI Embeddings
     embeddings = AzureOpenAIEmbeddings(
         openai_api_key=API_KEY,
         openai_api_base=RESOURCE_ENDPOINT,
         openai_api_version=API_VERSION,
-        openai_api_type="azure",  # Required for Azure
-        chunk_size=1000,           # Must be ≤ 2048; pick a value based on your model context
-        validate_base_url=False   # ✅ add this line
-    )    
+        openai_api_type="azure",
+        chunk_size=1000,
+        validate_base_url=False
+    )
 
-    if os.path.exists(persist_path) and os.listdir(persist_path):
-        return Chroma(persist_directory=persist_path, embedding_function=embeddings)
+    # If FAISS index already exists, load it
+    if os.path.exists(index_path):
+        return FAISS.load_local(index_path, embeddings)
 
-    # Load and chunk transcripts
+    # Otherwise, build from documents
     with open("data/clean_transcript1.txt", "r", encoding="utf-8") as f:
         transcript1_2022 = f.read()
     with open("data/clean_transcript2.txt", "r", encoding="utf-8") as f:
@@ -65,11 +65,8 @@ def load_vectorstore():
     labeled_2025 = [Document(page_content=c, metadata={"source": "2025"}) for c in chunks_2025]
     all_chunks = labeled_2022 + labeled_2025
 
-    vectorstore = FAISS.from_documents(
-    documents=all_chunks,
-    embedding=embeddings
-)
-    vectorstore.persist()
+    vectorstore = FAISS.from_documents(all_chunks, embeddings)
+    vectorstore.save_local(index_path)
     return vectorstore
 
 # Load vectorstore and model
@@ -95,7 +92,7 @@ identify and summarize the key themes discussed. Present your findings as bullet
 summary_chain = LLMChain(llm=chat_llm, prompt=summary_prompt)
 
 # Streamlit UI
-st.title("\U0001F9E0 ADRD Symposium LLM Explorer")
+st.title("🧠 ADRD Symposium LLM Explorer")
 st.write("Compare key themes and insights from the 2022 and 2025 ADRD Symposiums.")
 
 year_selection = st.selectbox("Select Symposium Year", ["All", "2022", "2025"])
