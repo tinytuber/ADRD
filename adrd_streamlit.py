@@ -1,5 +1,5 @@
 import os
-os.environ["CHROMA_USE_STATIC"] = st.secrets["CHROMA_USE_STATIC"]
+os.environ["CHROMA_USE_STATIC"] = "true"
 import streamlit as st
 from dotenv import load_dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
